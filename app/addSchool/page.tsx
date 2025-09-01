@@ -12,14 +12,23 @@ const schema = yup.object({
   state: yup.string().required('State is required'),
   contact: yup.string().matches(/^\d{10}$/, 'Contact must be a 10-digit number').required('Contact is required'),
   email_id: yup.string().email('Invalid email').required('Email is required'),
-  image: yup.mixed()
-    .required('Image is required')
-    .test('fileType', 'Only image files are allowed', (value) => {
-      return value && value[0] && value[0].type.startsWith('image/');
+ image: yup
+    .mixed<FileList>()
+    .required("Image is required")
+    .test("fileType", "Only image files are allowed", (value) => {
+      return value && value.length > 0 && value[0].type.startsWith("image/");
     }),
 });
 
-type FormData = yup.InferType<typeof schema>;
+type FormData = {
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  contact: string;
+  email_id: string;
+  image: FileList;
+};
 
 export default function AddSchool() {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
